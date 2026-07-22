@@ -30,8 +30,10 @@ def handle_message(message):
         response = model.generate_content(full_prompt)
         bot.reply_to(message, response.text)
     except Exception as e:
-        bot.reply_to(message, "مشکلی پیش آمد. لطفاً مجدداً تلاش کنید.")
-
+        # این خط اضافه شد تا ارور در پنل رندر چاپ شود
+        print(f"Gemini Error: {e}") 
+        bot.reply_to(message, "متأسفانه مشکلی در ارتباط با هوش مصنوعی پیش آمد.")
+        
 # --- بخش وب‌سرور فیک برای روشن ماندن رندر ---
 app = Flask(__name__)
 
