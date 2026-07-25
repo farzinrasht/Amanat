@@ -30,7 +30,7 @@ def handle_message(message):
         
         # استفاده از متد جدید گوگل برای دریافت پاسخ
         response = client.models.generate_content(
-            model='gemini-2.5-flash',
+            model='gemini-2.0-flash',
             contents=full_prompt,
         )
         
