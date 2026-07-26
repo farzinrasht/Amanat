@@ -31,8 +31,7 @@ def send_welcome(message):
 def handle_message(message):
     try:
         response = client.chat.completions.create(
-            # تغییر مدل به نسخه سریع و مسلط به فارسی گوگل
-            model="google/gemini-2.0-flash:free", 
+            model="qwen/qwen-2.5-72b-instruct:free", 
             messages=[
                 {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": message.text}
