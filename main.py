@@ -31,12 +31,12 @@ def send_welcome(message):
 def handle_message(message):
     try:
         response = client.chat.completions.create(
-            model="nvidia/nemotron-3-ultra-550b-a55b:free", 
+            # تغییر مدل به نسخه سریع و مسلط به فارسی گوگل
+            model="google/gemini-2.0-flash:free", 
             messages=[
                 {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": message.text}
             ],
-            # یک محدودیت سخت‌افزاری: نهایتاً حدود ۱۵۰ کلمه (تقریباً 300 توکن)
             max_tokens=300
         )
         
