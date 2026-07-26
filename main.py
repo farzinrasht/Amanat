@@ -31,7 +31,7 @@ def send_welcome(message):
 def handle_message(message):
     try:
         response = client.chat.completions.create(
-            model="qwen/qwen-2.5-72b-instruct:free", 
+            model="google/gemma-2-9b-it:free", 
             messages=[
                 {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": message.text}
