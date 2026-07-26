@@ -1,15 +1,18 @@
 import os
 import threading
 import telebot
-from google import genai
+from openai import OpenAI
 from flask import Flask
 
-# دریافت کلیدها
+# دریافت کلیدها از تنظیمات رندر
 TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
+OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
 
-# اتصال به کلاینت جدید گوگل
-client = genai.Client(api_key=GEMINI_API_KEY)
+# اتصال به سرورهای OpenRouter با استفاده از کتابخانه OpenAI
+client = OpenAI(
+  base_url="https://openrouter.ai/api/v1",
+  api_key=OPENROUTER_API_KEY,
+)
 
 SYSTEM_PROMPT = """
 تو یک دستیار معنوی و اسلامی به نام 'امانت' هستی.
@@ -26,18 +29,22 @@ def send_welcome(message):
 @bot.message_handler(func=lambda message: True)
 def handle_message(message):
     try:
-        full_prompt = f"{SYSTEM_PROMPT}\n\nپیام کاربر: {message.text}"
-        
-        # استفاده از متد جدید گوگل برای دریافت پاسخ
-        response = client.models.generate_content(
-            model='gemini-2.0-flash',
-            contents=full_prompt,
+        # ارسال پیام به OpenRouter
+        response = client.chat.completions.create(
+            # نام مدل جدید انویدیا دقیقاً در اینجا قرار می‌گیرد
+            model="nvidia/nemotron-3-ultra-550b-a55b:free", 
+            messages=[
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": message.text}
+            ]
         )
         
-        bot.reply_to(message, response.text)
+        # استخراج و ارسال پاسخ به کاربر
+        bot_reply = response.choices[0].message.content
+        bot.reply_to(message, bot_reply)
+        
     except Exception as e:
-        # استفاده از flush برای چاپ فوری خطا در صورت بروز مشکل مجدد
-        print(f"Gemini Error: {e}", flush=True) 
+        print(f"OpenRouter Error: {e}", flush=True)
         bot.reply_to(message, "متأسفانه مشکلی در ارتباط با هوش مصنوعی پیش آمد.")
 
 # --- بخش وب‌سرور فیک برای روشن ماندن رندر ---
@@ -45,7 +52,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return "ربات امانت روشن است!"
+    return "ربات امانت (نسخه OpenRouter) روشن است!"
 
 def run_bot():
     bot.polling(non_stop=True)
